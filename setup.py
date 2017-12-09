@@ -12,7 +12,10 @@ with open('HISTORY.rst') as history_file:
     HISTORY = history_file.read()
 
 REQUIREMENTS = [
-    'tebless'
+    'tebless',
+    'reportlab',
+    'requests',
+    'tqdm'
 ]
 
 SETUP_REQUIREMENTS = [
