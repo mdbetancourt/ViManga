@@ -11,6 +11,7 @@ tebless = "==1.2.3"
 requests = "*"
 reportlab = "*"
 tqdm = "*"
+fire = "*"
 
 
 [dev-packages]

@@ -23,12 +23,13 @@ def call_api(url: str = API_URL, **params) -> Response:
                         headers=HEADERS)
 
 
-def get_mangas(categorias=None,
-               defecto=1,
-               generos=None,
+def get_mangas(search='',
+               categories=None,
+               default=1,
+               genders=None,
                per_page=10,
                page=1,
-               puntuacion=0,
+               score=0,
                search_by='nombre',
                sort_dir='asc',
                sorted_by='nombre',
@@ -39,12 +40,13 @@ def get_mangas(categorias=None,
 
     while current_page <= page_count:
         _params = {
-            'categorias': categorias or [],
-            'defecto': defecto,
-            'generos': generos or [],
+            'categorias': categories or [],
+            'defecto': default,
+            'generos': genders or [],
             'itemsPerPage': int(per_page),
+            'nameSearch': search,
             'page': int(page),
-            'puntuacion': puntuacion,
+            'puntuacion': score,
             'searchBy': search_by,
             'sortDir': sort_dir,
             'sortedBy': sorted_by,
@@ -76,7 +78,7 @@ def get_mangas(categorias=None,
         yield mangas
 
 
-def get_chapters(manga: Manga, page) -> Chapters:
+def get_chapters(manga: Manga, page=1) -> Chapters:
     """Get all chapters from a manga"""
     current_page = 0
     page_count = 1
