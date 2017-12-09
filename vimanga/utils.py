@@ -9,6 +9,7 @@ import requests
 
 from tqdm import tqdm
 
+
 def download_image(info):
     """Download and convert image"""
     index, link = info
@@ -47,6 +48,7 @@ def convert_to_pdf(name: str, images: list, directory='.'):
         raise ImportError('Reportlab is required for convert to pdf')
 
     filename = os.path.join(directory, name)
+    os.makedirs(directory, exist_ok=True)
 
     canva = Canvas(filename)
     for _, image in images:
@@ -63,6 +65,7 @@ def convert_to_pdf(name: str, images: list, directory='.'):
 def convert_to_images(name: str, folder: str, images: list, directory='.'):
     """Convert to a folder of images"""
     folder = os.path.join(directory, folder)
+    os.makedirs(folder, exist_ok=True)
 
     for idx, image in images:
         filename = os.path.join(folder, name.format(idx))
