@@ -1,9 +1,8 @@
 """Utilities functions"""
 
-import io
 import os
 from multiprocessing.dummy import Pool
-
+from tempfile import NamedTemporaryFile
 import requests
 from tqdm import tqdm
 
@@ -47,7 +46,7 @@ def download_chapter(chapter,
 def convert_to_pdf(name: str, images: list, directory='.'):
     """Convert a list of images in pdf"""
     try:
-        from reportlab.lib.utils import ImageReader
+        from PIL import Image
         from reportlab.pdfgen.canvas import Canvas
     except ImportError:
         raise ImportError('Reportlab is required for convert to pdf')
@@ -57,12 +56,12 @@ def convert_to_pdf(name: str, images: list, directory='.'):
 
     canva = Canvas(filename)
     for _, image in images:
-        image_bytes = io.BytesIO(image)
-        buffer = ImageReader(image_bytes)
-
-        canva.setPageSize(buffer.getSize())
-        canva.drawImage(buffer, 0, 0)
-        canva.showPage()
+        with NamedTemporaryFile(mode='wb') as tmp_image:
+            tmp_image.write(image)
+            img = Image.open(tmp_image.name)
+            canva.setPageSize(img.size)
+            canva.drawImage(tmp_image.name, 0, 0)
+            canva.showPage()
 
     canva.save()
 
