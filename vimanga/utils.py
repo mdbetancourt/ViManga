@@ -3,12 +3,11 @@
 import io
 import os
 from multiprocessing.dummy import Pool
-from types import GeneratorType
 
 import requests
-
 from tqdm import tqdm
 
+from vimanga.api.core import get_images
 
 def download_image(info):
     """Download and convert image"""
@@ -22,8 +21,9 @@ def download_image(info):
     return index, data.content
 
 
-def download_chapter(link_list: GeneratorType, threads=4, progress=None):
+def download_chapter(chapter, threads=4, scan=0, progress=None):
     """Return a list of images"""
+    link_list = get_images(chapter, scan)
     links = list(link_list)
     enumerate_links = enumerate(links)
     len_links = len(links)
@@ -32,11 +32,11 @@ def download_chapter(link_list: GeneratorType, threads=4, progress=None):
     generator = pool.imap_unordered(download_image, enumerate_links)
 
     wrapper = progress or tqdm
-    for index, image in wrapper(generator, total=len_links):
+    for index, image in wrapper(generator, desc=f'Capitulo {chapter.number}', total=len_links):
         images.append((index, image))
 
     pool.close()
-    return sorted(images)
+    return chapter, sorted(images)
 
 
 def convert_to_pdf(name: str, images: list, directory='.'):
