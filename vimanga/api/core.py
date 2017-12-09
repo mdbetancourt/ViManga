@@ -1,7 +1,6 @@
 """Api core"""
 
 import ast
-import json
 from operator import itemgetter
 from types import GeneratorType
 
@@ -35,63 +34,59 @@ def get_mangas(categorias=None,
                sorted_by='nombre',
                **params) -> Mangas:
     """Get all filters mangas"""
-    while True:
+    current_page = 0
+    page_count = 1
+
+    while current_page <= page_count:
         _params = {
             'categorias': categorias or [],
             'defecto': defecto,
             'generos': generos or [],
-            'itemsPerPage': per_page,
-            'page': page,
+            'itemsPerPage': int(per_page),
+            'page': int(page),
             'puntuacion': puntuacion,
             'searchBy': search_by,
             'sortDir': sort_dir,
             'sortedBy': sorted_by,
             **params
         }
-        response = call_api(API_URL, **_params)
-        try:
-            response = response.json()
-        except json.JSONDecodeError:
-            raise Exception(response.text)
-        values = {
-            'total': response['total'],
-            'per_page': response['per_page'],
-            'current_page': response['current_page'],
-            'page_count': response['last_page'],
-            'data': []
-        }
+        response = call_api(API_URL, **_params).json()
+        current_page = response['current_page']
+        page_count = response['last_page']
 
-        for manga in response['data']:
-            values['data'].append(Manga(
-                id=manga['id'],
-                type=manga['tipo'],
-                score=manga['puntuacion'],
-                name=manga['nombre'],
-                synopsis=manga['info']['sinopsis'],
-                genders=list(map(itemgetter('genero'), manga['generos']))
-            ))
+        data = [
+            Manga(id=manga['id'],
+                  type=manga['tipo'],
+                  score=manga['puntuacion'],
+                  name=manga['nombre'],
+                  synopsis=manga['info']['sinopsis'],
+                  genders=list(map(itemgetter('genero'), manga['generos'])))
+            for manga in response['data']
+        ]
 
-        mangas = Mangas(**values)
-        if mangas.current_page < mangas.page_count:
-            page += 1
-            yield mangas
-        else:
-            yield mangas
-            return
+        mangas = Mangas(
+            total=response['total'],
+            per_page=response['per_page'],
+            current_page=current_page,
+            page_count=page_count,
+            data=data
+        )
+
+        page += 1
+        yield mangas
 
 
-def get_chapters(manga: Manga, page: int = 1) -> Chapters:
+def get_chapters(manga: Manga, page) -> Chapters:
     """Get all chapters from a manga"""
-    while True:
-        response = call_api(MANGA_URL.format(manga.id), page=page).json()
+    current_page = 0
+    page_count = 1
 
-        values = {
-            'total': response['total'],
-            'per_page': response['per_page'],
-            'current_page': response['current_page'],
-            'page_count': response['last_page'],
-            'data': []
-        }
+    while current_page <= page_count:
+        response = call_api(MANGA_URL.format(manga.id), page=int(page)).json()
+        current_page = response['current_page']
+        page_count = response['last_page']
+
+        data = []
 
         for chapter in response['data']:
             uploads = []
@@ -101,7 +96,7 @@ def get_chapters(manga: Manga, page: int = 1) -> Chapters:
                     name=upload['scanlation']['nombre']
                 ))
 
-            values['data'].append(Chapter(
+            data.append(Chapter(
                 id=chapter['id'],
                 name=chapter['nombre'],
                 manga_id=chapter['tomo']['idManga'],
@@ -109,13 +104,16 @@ def get_chapters(manga: Manga, page: int = 1) -> Chapters:
                 uploads=uploads
             ))
 
-        chapters = Chapters(**values)
+        chapters = Chapters(
+            total=response['total'],
+            per_page=response['per_page'],
+            current_page=current_page,
+            page_count=page_count,
+            data=data
+        )
 
-        if chapters.current_page < chapters.page_count:
-            yield chapters
-        else:
-            yield chapters
-            return
+        page += 1
+        yield chapters
 
 
 def get_images(chapter: Chapter, scan=0) -> GeneratorType:
