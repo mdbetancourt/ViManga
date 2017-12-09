@@ -3,8 +3,52 @@ import os
 from itertools import chain
 from functools import partial
 from operator import attrgetter
-from vimanga import api, utils
 from multiprocessing.dummy import Pool
+
+from vimanga import api, utils
+
+
+def find(search='',
+         threads=3,
+         chapters=None,
+         directory=None,
+         download=False,
+         convert_to='images',
+         **kwargs):
+    """Find mangas cli interface"""
+
+    mangas = next(api.core.get_mangas(search, **kwargs))
+
+    if not chapters:
+        return '\n'.join(
+            map(lambda x: '{}, {}'.format(x.name, x.score), mangas.data)
+        )
+
+    manga = mangas.data[0]
+    print('Manga: {}'.format(manga.name))
+
+    manga_chapters = api.core.get_chapters(manga)
+    filters_chapters = _filter_chapters(manga_chapters, chapters)
+    filters_chapters = sorted(filters_chapters, key=lambda x: float(x.number))
+
+    if not download:
+        return '\n'.join(
+            map(lambda x: 'Capitulo {}'.format(x.number), filters_chapters)
+        )
+
+    pool = Pool(threads)
+
+    directory = directory or os.path.expanduser('~')
+    manga_folder = os.path.join(directory, manga.name)
+
+    generator = pool.imap_unordered(utils.download_chapter, filters_chapters)
+    for chapter, data in generator:
+        if convert_to == 'images':
+            utils.convert_to_images('{}', chapter.number, data, manga_folder)
+        else:
+            utils.convert_to_pdf(f'Capitulo {chapter.number}',
+                                 data,
+                                 manga_folder)
 
 
 def _contain(numbers, chapter):
@@ -28,41 +72,3 @@ def _filter_chapters(chapters, numbers):
     chapters = map(attrgetter('data'), chapters)
     chapters = chain.from_iterable(chapters)
     return filter(partial(_contain, numbers), chapters)
-
-
-def find(search='',
-         chapters=None,
-         download=False,
-         format='images',
-         **kwargs):
-    """Find mangas cli interface"""
-
-    mangas = next(api.core.get_mangas(search, **kwargs))
-
-    if not chapters:
-        return '\n'.join(
-            map(lambda x: '{}, {}'.format(x.name, x.score), mangas.data)
-        )
-
-    manga = mangas.data[0]
-    print('Manga: {}'.format(manga.name))
-
-    manga_chapters = api.core.get_chapters(manga)
-    filters_chapters = _filter_chapters(manga_chapters, chapters)
-    filters_chapters = sorted(filters_chapters, key=lambda x: float(x.number))
-
-    if not download:
-        return '\n'.join(
-            map(lambda x: 'Capitulo {}'.format(x.number), filters_chapters)
-        )
-
-    pool = Pool(processes=3)
-
-    directory = os.path.expanduser('~')
-    manga_folder = os.path.join(directory, manga.name)
-
-    for chapter, data in pool.imap_unordered(utils.download_chapter, filters_chapters):
-        if format == 'images':
-            utils.convert_to_images('{}', chapter.number, data, manga_folder)
-        else:
-            utils.convert_to_pdf(f'Capitulo {chapter.number}', data, manga_folder)

@@ -78,7 +78,7 @@ def get_mangas(search='',
         yield mangas
 
 
-def get_chapters(manga: Manga, page = 1) -> Chapters:
+def get_chapters(manga: Manga, page=1) -> Chapters:
     """Get all chapters from a manga"""
     current_page = 0
     page_count = 1
