@@ -44,9 +44,12 @@ def find(search='',
     generator = pool.imap_unordered(utils.download_chapter, filters_chapters)
     for chapter, data in generator:
         if convert_to == 'images':
-            utils.convert_to_images('{}', chapter.number, data, manga_folder)
+            utils.convert_to_images('{}.jpg',
+                                    chapter.number,
+                                    manga_folder,
+                                    data)
         else:
-            utils.convert_to_pdf(f'Capitulo {chapter.number}',
+            utils.convert_to_pdf(f'Capitulo {chapter.number}.pdf',
                                  data,
                                  manga_folder)
 

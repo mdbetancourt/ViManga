@@ -37,6 +37,11 @@ setup(
     packages=find_packages(include=['vimanga', 'vimanga.*']),
     include_package_data=True,
     install_requires=REQUIREMENTS,
+    entry_points={
+        'console_scripts': [
+            'vimanga = vimanga.__main__:main'
+        ]
+    },
     license="MIT license",
     zip_safe=False,
     keywords='vimanga',
