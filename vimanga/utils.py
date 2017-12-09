@@ -9,6 +9,7 @@ from tqdm import tqdm
 
 from vimanga.api.core import get_images
 
+
 def download_image(info):
     """Download and convert image"""
     index, link = info
@@ -21,22 +22,26 @@ def download_image(info):
     return index, data.content
 
 
-def download_chapter(chapter, threads=4, scan=0, progress=None):
-    """Return a list of images"""
-    link_list = get_images(chapter, scan)
-    links = list(link_list)
-    enumerate_links = enumerate(links)
-    len_links = len(links)
-    images = []
+def download_chapter(chapter,
+                     threads=4,
+                     progress=None,
+                     scan=0,
+                     **kwargs):
+    """Return a list of images bytes with chapter"""
+    link_list = list(get_images(chapter, scan))
+    enumerate_links = enumerate(link_list)
+
     pool = Pool(processes=threads)
-    generator = pool.imap_unordered(download_image, enumerate_links)
-
     wrapper = progress or tqdm
-    for index, image in wrapper(generator, desc=f'Capitulo {chapter.number}', total=len_links):
-        images.append((index, image))
 
-    pool.close()
-    return chapter, sorted(images)
+    generator = wrapper(
+        pool.imap_unordered(download_image, enumerate_links),
+        desc=f'Capitulo {chapter.number}',
+        total=len(link_list),
+        **kwargs
+    )
+
+    return chapter, sorted((index, image) for index, image in generator)
 
 
 def convert_to_pdf(name: str, images: list, directory='.'):
