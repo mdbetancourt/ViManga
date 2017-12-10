@@ -15,7 +15,8 @@ REQUIREMENTS = [
     'tebless',
     'reportlab',
     'requests',
-    'tqdm'
+    'tqdm',
+    'fire'
 ]
 
 SETUP_REQUIREMENTS = [
