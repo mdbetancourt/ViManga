@@ -29,7 +29,7 @@ TEST_REQUIREMENTS = [
 
 setup(
     name='vimanga',
-    version='0.1.0',
+    version='0.2.0',
     description="App for download manga",
     long_description=README + '\n\n' + HISTORY,
     author="Michel Betancourt",
