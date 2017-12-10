@@ -1,0 +1,29 @@
+[[source]]
+
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+
+[packages]
+
+tebless = "==1.2.3"
+requests = "*"
+reportlab = "*"
+tqdm = "*"
+fire = "*"
+
+
+[dev-packages]
+
+bumpversion = "==0.5.3"
+"flake8" = "==3.5.0"
+tox = "==2.9.1"
+cryptography = "==2.1.3"
+pyyaml = "==3.12"
+pytest = "==3.3.1"
+pytest-runner = "==3.0"
+wheel = "==0.30.0"
+pip = "==9.0.1"
+pylint = "*"
+"autopep8" = "*"
