@@ -2,11 +2,8 @@
 
 import ast
 from operator import itemgetter
-from types import GeneratorType
-
 
 import requests
-from requests import Response
 
 from vimanga.api.constants import (
     HEADERS, API_URL, MANGA_URL, CAPS_URL, IMAGES_SERVER
@@ -16,7 +13,7 @@ from vimanga.api.types import (
 )
 
 
-def call_api(url: str = API_URL, **params) -> Response:
+def call_api(url=API_URL, **params):
     """Call api and set default header"""
     return requests.get(url,
                         params=params,
@@ -33,7 +30,7 @@ def get_mangas(search='',
                search_by='nombre',
                sort_dir='asc',
                sorted_by='nombre',
-               **params) -> Mangas:
+               **params):
     """Get all filters mangas"""
     current_page = 0
     page_count = 1
@@ -78,7 +75,7 @@ def get_mangas(search='',
         yield mangas
 
 
-def get_chapters(manga: Manga, page=1) -> Chapters:
+def get_chapters(manga, page=1):
     """Get all chapters from a manga"""
     current_page = 0
     page_count = 1
@@ -118,9 +115,9 @@ def get_chapters(manga: Manga, page=1) -> Chapters:
         yield chapters
 
 
-def get_images(chapter: Chapter, scan=0) -> GeneratorType:
+def get_images(chapter, scan=0):
     """Get a provide chapter"""
-    scanlation: Scan = chapter.uploads[scan]
+    scanlation = chapter.uploads[scan]
     _params = {
         'idManga': chapter.manga_id,
         'idScanlation': scanlation.id,
