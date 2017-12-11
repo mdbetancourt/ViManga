@@ -21,33 +21,46 @@ def call_api(url=API_URL, **params):
 
 
 def get_mangas(search='',
-               categories=None,
-               default=1,
-               genders=None,
-               per_page=10,
                page=1,
                score=0,
-               search_by='nombre',
-               sort_dir='asc',
-               sorted_by='nombre',
-               **params):
-    """Get all filters mangas"""
+               genders=None,
+               **kwargs):
+    """Get all filters mangas
+
+    :param int page: Current page.
+    :param str search: Whats search.
+    :param str sort_dir: Sort results.
+    :param list genders: Id of genders.
+    :param int score: Min score to show.
+    :param str search_by: Whats use to search.
+    :param int per_page: Number items per page.
+    :param list categories: Possible categories.
+    :param str sorted_by: Whats value use to sort.
+
+    Possible Values:
+        categories: 1-Oneshot, 2-Dojinshi, 3-Webtoon, 4-Yonkoma
+        sort_dir: asc, desc
+        sorted_by: puntuacion, nombre, numVistos, fechaCreacion
+        search_by: revista, artista, autor, nombre
+
+    """
+
     current_page = 0
     page_count = 1
 
     while current_page <= page_count:
         _params = {
-            'categorias': categories or [],
-            'defecto': default,
+            'categorias': kwargs.pop('categories', []),
+            'defecto': kwargs.get('default', 1),
             'generos': genders or [],
-            'itemsPerPage': int(per_page),
+            'itemsPerPage': int(kwargs.pop('per_page', 10)),
             'nameSearch': search,
             'page': int(page),
             'puntuacion': score,
-            'searchBy': search_by,
-            'sortDir': sort_dir,
-            'sortedBy': sorted_by,
-            **params
+            'searchBy': kwargs.pop('search_by', 'nombre'),
+            'sortDir': kwargs.pop('sort_dir', 'asc'),
+            'sortedBy': kwargs.pop('sorted_by', 'nombre'),
+            **kwargs
         }
         response = call_api(API_URL, **_params).json()
         current_page = response['current_page']

@@ -9,16 +9,14 @@ from vimanga import api, utils
 
 
 def find(search='',
-         threads=3,
          chapters=None,
-         directory=None,
          download=False,
          convert_to='images',
          **kwargs):
     """Find mangas cli interface"""
 
+    threads = kwargs.pop('threads', 3)
     mangas = next(api.core.get_mangas(search, **kwargs))
-
     if not chapters:
         return '\n'.join(
             map(lambda x: '{}, {}'.format(x.name, x.score), mangas.data)
@@ -27,8 +25,7 @@ def find(search='',
     manga = mangas.data[0]
     print('Manga: {}'.format(manga.name))
 
-    manga_chapters = api.core.get_chapters(manga)
-    filters_chapters = _filter_chapters(manga_chapters, chapters)
+    filters_chapters = _filter_chapters(api.core.get_chapters(manga), chapters)
     filters_chapters = sorted(filters_chapters, key=lambda x: float(x.number))
 
     if not download:
@@ -38,7 +35,7 @@ def find(search='',
 
     pool = Pool(threads)
 
-    directory = directory or os.path.expanduser('~')
+    directory = kwargs.pop('directory', os.path.expanduser('~'))
     manga_folder = os.path.join(directory, manga.name)
 
     generator = pool.imap_unordered(utils.download_chapter, filters_chapters)

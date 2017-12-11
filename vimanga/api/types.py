@@ -1,3 +1,4 @@
+"""Types and constans require for the api"""
 
 from collections import namedtuple
 
