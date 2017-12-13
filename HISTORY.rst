@@ -4,10 +4,12 @@ History
 
 unreleased
 ------------------
+* Added Documentation
+* Improved python 2.7 and 3.4 compatibility
 
 0.2.1
 ------------------
-* Fix python 3.5 compatibility
+* Fixed python 3.5 compatibility
 
 0.2.0
 ------------------
