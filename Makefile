@@ -27,9 +27,12 @@ help:
 	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
 clean: clean-build clean-pyc clean-test ## remove all build, test, coverage and Python artifacts
+hooks:
+	git config gitflow.path.hooks .git/hooks/
+	cp -R .hooks/* .git/hooks/
 
 dev:
-	cp -R .hooks/* .git/hooks/
+	hooks
 	pipenv install --dev
 
 

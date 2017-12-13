@@ -18,7 +18,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # prevent-merge-marker-commits
-python "$HOOKS_DIR/modules/prevent-flake8.py"
+pylint -rn vimanga
 if [ $? -ne 0 ]; then
     HOOK_STATUS=1
 fi
