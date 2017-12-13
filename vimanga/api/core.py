@@ -59,9 +59,9 @@ def get_mangas(search='',
             'puntuacion': score,
             'searchBy': kwargs.pop('search_by', 'nombre'),
             'sortDir': kwargs.pop('sort_dir', 'asc'),
-            'sortedBy': kwargs.pop('sorted_by', 'nombre'),
-            **kwargs
+            'sortedBy': kwargs.pop('sorted_by', 'nombre')
         }
+        _params.update(kwargs)
         response = call_api(API_URL, **_params).json()
         current_page = response['current_page']
         page_count = response['last_page']

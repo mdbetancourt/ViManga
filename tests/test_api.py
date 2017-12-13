@@ -6,7 +6,7 @@
 import pytest
 
 from vimanga.api.core import call_api, get_chapters, get_images
-from vimanga.api.types import Manga, Chapters
+from vimanga.api.types import Manga
 
 
 @pytest.fixture
@@ -39,7 +39,7 @@ def test_get_sample_manga(manga, chapters):
     assert _chapters, 'Not fetch chapters'
 
 
-def test_get_sample_images(chapters: Chapters):
+def test_get_sample_images(chapters):
     """Test with a sample cap"""
     chapter = chapters.data[0]
     resp = list(get_images(chapter))

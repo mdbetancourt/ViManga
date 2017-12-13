@@ -36,6 +36,7 @@ def find(search='',
     pool = Pool(threads)
 
     directory = kwargs.pop('directory', os.path.expanduser('~'))
+    manga_folder = os.path.join(directory, 'mangas')
     manga_folder = os.path.join(directory, manga.name)
 
     generator = pool.imap_unordered(utils.download_chapter, filters_chapters)
