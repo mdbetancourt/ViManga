@@ -1,5 +1,5 @@
 tebless==1.2.3
 reportlab==3.4.0
 requests==2.18.4
-tqdm==4.19.5
+tqdm==4.57.0
 fire==0.1.2
