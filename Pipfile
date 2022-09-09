@@ -9,7 +9,7 @@ name = "pypi"
 
 tebless = "==1.2.3"
 requests = "==2.18.4"
-reportlab = "==3.4.0"
+reportlab = "==3.5.55"
 tqdm = "==4.19.4"
 fire = "==0.1.2"
 
