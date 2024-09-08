@@ -2,7 +2,7 @@ pip==9.0.1
 wheel==0.30.0
 bumpversion==0.5.3
 flake8==3.5.0
-tox==2.9.1
+tox==4.18.1
 cryptography==2.1.4
 pyyaml==3.12
 pytest==3.3.1
